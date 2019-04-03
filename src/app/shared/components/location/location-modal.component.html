@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar color='light'>
+    <ion-title>Select Location</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)='onClose()'>
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div *ngIf="loading">Loading...</div>
+    <div ngxMap [view]='marker' (mapInit)='onMapInit($event)' [placeSelectable]='enableSelection'></div>
+</ion-content>
+<ion-footer *ngIf='enableSelection'>
+  <ion-button color='secondary' expand="full" (click)='onSelect()'>Select</ion-button>
+</ion-footer>

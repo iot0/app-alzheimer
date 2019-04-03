@@ -1,0 +1,20 @@
+<ion-content padding>
+  <div class="align-center">
+    <!-- <ion-img class="logo" src="/assets/logo.png"></ion-img> -->
+    <ion-card>
+      <ion-card-content>
+        <form [formGroup]="loginForm" novalidate>
+          <ion-item>
+            <ion-label position="floating">Email</ion-label>
+            <ion-input type="text" formControlName="email"></ion-input>
+          </ion-item>
+          <ion-item class="ion-margin-bottom">
+            <ion-label position="floating">Password</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
+          <ion-button expand="block" (click)="onLogin()">Login</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

@@ -1,0 +1,30 @@
+:host {
+    .wel-container {
+      height: 100%;
+      width: 100%;
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      // flex-direction: column;
+      // justify-content: center;
+      // align-items: center;
+      background-color: #fff;
+  
+      .logo-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // background-image: url("/assets/images/logo.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+  
+      .logo-text {
+        font-size: 4em;
+        font-weight: 600;
+        font-family: cursive;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+  

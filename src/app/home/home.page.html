@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar color='primary'>
+    <ion-title>
+      Home
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding class="bg-secondary">
+  <div class="col-grid">
+    <!--trips-->
+    <div class="col-item" [routerLink]="['/events']">
+      <ion-icon name="infinite" color='secondary'></ion-icon>
+      <div class="col-label">
+        Event
+      </div>
+    </div>
+    <div class="col-item" [routerLink]="['/user/companion-trips']" *ngIf='userService.isCareTaker$|async'>
+      <ion-icon name="infinite" color='secondary'></ion-icon>
+      <div class="col-label">
+        Patient
+      </div>
+    </div>
+    <div class="col-item" [routerLink]="['/user/companion-trips']" *ngIf='userService.isPatient$|async'>
+      <ion-icon name="infinite" color='secondary'></ion-icon>
+      <div class="col-label">
+        Home 
+      </div>
+    </div>
+    <!---->
+    <div class="col-item" (click)="onLogOut()">
+      <ion-icon name="log-out" color='danger'></ion-icon>
+      <div class="col-label">
+        Log Out
+      </div>
+    </div>
+  </div>
+</ion-content>

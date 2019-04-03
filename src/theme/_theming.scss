@@ -1,0 +1,25 @@
+@import "./theme.scss";
+
+@function contrast($color) {
+  @if (lightness($color) > 65%) {
+    @return #000000; // Lighter backgorund, return dark color
+  } @else {
+    @return #ffffff; // Darker background, return light color
+  }
+}
+
+@mixin install-theme($theme: null) {
+  $kh-themes: map-merge($default, $theme);
+
+  :root {
+    @each $var, $value in $kh-themes {
+      --ion-color-#{$var}: #{$value};
+      --ion-color-#{$var}-rgb: #{red($value), green($value), blue($value)};
+      --ion-color-#{$var}-contrast: #{contrast($value)};
+      --ion-color-#{$var}-contrast-rgb: #{red(contrast($value)),
+        green(contrast($value)), blue(contrast($value))};
+      --ion-color-#{$var}-shade: #{darken($value, 20%)};
+      --ion-color-#{$var}-tint: #{lighten($value, 10%)};
+    }
+  }
+}

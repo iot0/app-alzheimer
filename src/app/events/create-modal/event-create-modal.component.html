@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-button fill="solid" (click)="onClose()" color="light" fill="outline">
+        Back
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Create Events</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="solid" (click)="onSubmit()" color="light" fill="outline">
+        Confirm
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <form [formGroup]="createForm" novalidate>
+      <ion-item-divider>
+        <ion-label>
+          <ion-text color="primary">
+            <h2>EVENT TITLE</h2>
+          </ion-text>
+        </ion-label>
+      </ion-item-divider>
+      <ion-item>
+        <ion-input formControlName="title" type="text" placeholder="Hut"></ion-input>
+      </ion-item>
+      <ion-item-divider>
+        <ion-label>
+          <ion-text color="primary">
+            <h2>EVENT DATE</h2>
+          </ion-text>
+        </ion-label>
+      </ion-item-divider>
+      <ion-item>
+        <ion-datetime formControlName="eventDate" display-format="MMM DD, YYYY HH:mm" placeholder="Select Date and Time" [min]='todaysDate'></ion-datetime>
+      </ion-item>
+      <ion-item-divider>
+        <ion-label>
+          <ion-text color="primary">
+            <h2>IS LOCATION EVENT</h2>
+          </ion-text>
+        </ion-label>
+      </ion-item-divider>
+      <ion-item>
+        <ion-checkbox formControlName="isLocationEvent" color="primary"></ion-checkbox>
+      </ion-item>
+      <ng-container *ngIf="createForm.get('isLocationEvent').value">
+        <ion-item-divider>
+          <ion-label>
+            <ion-text color="primary">
+              <h2>ADDRESS FROM MAP</h2>
+            </ion-text>
+            <p>Latitude and longitude .</p>
+          </ion-label>
+          <ion-fab-button appLocation enableSelection="true" color="secondary" (onSelect)="onLocationSelect($event)">
+            <ion-icon name="compass"></ion-icon>
+          </ion-fab-button>
+        </ion-item-divider>
+        <ion-item>
+          <ion-input [value]="createForm.get('latLng').value" type="text" placeholder="23.455,45.555" disabled></ion-input>
+          <input type="hidden" formControlName="latLng" />
+        </ion-item>
+        <ion-item-divider>
+          <ion-label>
+            <ion-text color="primary">
+              <h2>ADDRESS</h2>
+            </ion-text>
+          </ion-label>
+        </ion-item-divider>
+        <ion-item>
+          <ion-textarea formControlName="address" type="text" placeholder="Ulloor , Trivandrum"></ion-textarea>
+        </ion-item>
+      </ng-container>
+      <ion-item-divider>
+        <ion-label>
+          <ion-text color="primary">
+            <h2>DESCRIPTION</h2>
+          </ion-text>
+        </ion-label>
+      </ion-item-divider>
+      <ion-item>
+        <ion-textarea formControlName="description" type="text" placeholder="Description"></ion-textarea>
+      </ion-item>
+    </form>
+  </ion-list>
+</ion-content>

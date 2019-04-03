@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Events</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment (ionChange)="onEventSegmentChange($event)" value="toCome">
+      <ion-segment-button value="toCome">
+        <ion-icon name="clock"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="history">
+        <ion-icon name="clipboard"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ng-container *ngIf="(data$ | async) as res">
+    <ng-container *ngIf="res.data; else notificationTemplate">
+      <div class="position-relative">
+        <ion-list lines="inset">
+          <ion-item *ngFor="let event of res.data">
+            <ion-label text-wrap>
+              <ion-text color="primary">
+                <h3>{{ event.Title }}</h3>
+              </ion-text>
+              <p>{{ event.Description }}</p>
+              <ion-text>
+                <p>Time {{ event.EventDate | date: "yyyy/MM/dd 'at' HH:mm:ss" }}</p>
+              </ion-text>
+              <ion-text *ngIf='event.IsLocationEvent'>
+                <h4>{{ event.Address }}</h4>
+              </ion-text>
+            </ion-label>
+            <ion-fab vertical="bottom" horizontal="end" *ngIf='event.IsLocationEvent'>
+              <ion-fab-button [appLocation]="event?.LatLng" color="light">
+                <ion-icon name="compass"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ng-container>
+    <ng-template #notificationTemplate>
+      <ng-container *ngIf="res.error || res.empty; else loadingTemplate">
+        <div class="item-center" [hidden]="!res.error">
+          Something went wrong , Try again later .
+        </div>
+        <div class="item-center" [hidden]="!res.empty">
+          List is empty.
+        </div>
+      </ng-container>
+      <ng-template #loadingTemplate>
+        <div class="item-center">
+          <ion-spinner name="lines"></ion-spinner>
+        </div>
+      </ng-template>
+    </ng-template>
+  </ng-container>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="onEventCreate()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

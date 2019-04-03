@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1067336857046",
+    "firebase_url": "https://app-alzheimer.firebaseio.com",
+    "project_id": "app-alzheimer",
+    "storage_bucket": "app-alzheimer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067336857046:android:6dda735dbe0c80d8",
+        "android_client_info": {
+          "package_name": "com.keephacking.alzheimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067336857046-hcc1ggc1oa489ejc001qshg7q9s68it8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBPO5cHEngEXI0JZO1v7LzXSWvcNm6CYQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

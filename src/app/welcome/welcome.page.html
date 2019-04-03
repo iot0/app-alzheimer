@@ -1,0 +1,18 @@
+<ion-content>
+    <div class="wel-container">
+      <div class="logo-wrapper">
+        <!-- <img src="/assets/images/logo.png" alt=""> -->
+        <span class="logo-text">Alzhemer</span>
+      </div>
+      <div padding>
+        <ng-container *ngIf='user.isLoggedIn$|async;else loginTemplate;'>
+          <ion-button round expand='block' color="primary" (click)='user.logOut()'>Logout</ion-button>
+          <ion-button round expand='block' color="primary" routerLink='/home'>Home</ion-button>
+        </ng-container>
+        <ng-template #loginTemplate>
+          <ion-button round routerLink='/login' expand='block' color="primary">Login</ion-button>
+          <ion-button round routerLink='/register' expand='block' color="primary">Sign Up</ion-button>
+        </ng-template>
+      </div>
+    </div>
+  </ion-content>

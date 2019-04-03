@@ -1,0 +1,9 @@
+:host {
+  min-height: 80vh;
+  google-maps {
+    flex: 1;
+  }
+  ion-footer{
+    background-color:var(--ion-color-secondary);
+  }
+}
