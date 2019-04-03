@@ -1,0 +1,3 @@
+[submodule "projects/ngx-map"]
+	path = projects/ngx-map
+	url = https://github.com/keephacking/ngx-map.git
