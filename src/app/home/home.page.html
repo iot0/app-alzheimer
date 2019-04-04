@@ -10,21 +10,31 @@
   <div class="col-grid">
     <!--trips-->
     <div class="col-item" [routerLink]="['/events']">
-      <ion-icon name="infinite" color='secondary'></ion-icon>
+      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+      <img src="/assets/events.png" alt="">
       <div class="col-label">
-        Event
+        Events
       </div>
     </div>
-    <div class="col-item" [routerLink]="['/user/companion-trips']" *ngIf='userService.isCareTaker$|async'>
-      <ion-icon name="infinite" color='secondary'></ion-icon>
+    <div class="col-item" [routerLink]="['/patient']" *ngIf='userService.isCareTaker$|async'>
+      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+      <img src="/assets/patient.png" alt="">
       <div class="col-label">
         Patient
       </div>
     </div>
-    <div class="col-item" [routerLink]="['/user/companion-trips']" *ngIf='userService.isPatient$|async'>
-      <ion-icon name="infinite" color='secondary'></ion-icon>
+    <div class="col-item" *ngIf='userService.isPatient$|async'>
+      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+      <img src="/assets/location.jpg" alt="">
       <div class="col-label">
-        Home 
+        Home Location
+      </div>
+    </div>
+    <div class="col-item" *ngIf='userService.isPatient$|async'>
+      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+      <img src="/assets/family.png" alt="">
+      <div class="col-label">
+        Family
       </div>
     </div>
     <!---->

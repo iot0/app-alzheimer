@@ -6,6 +6,10 @@ export class User {
   CreatedAt?:Date;
   Role?:UserRole;
   Password?:string;
+  Address?:string;
+  LatLng?:string;
+  PhoneNumber?:string;
+  PatientId?:string;
 }
 export enum UserRole{
     CareTaker=1,

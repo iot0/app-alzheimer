@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title>Patient</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ng-container *ngIf="!isPatientAdded; else viewTemplate">
+    <app-patient-form [careTakerId]="currentUser.Uid"></app-patient-form>
+  </ng-container>
+  <ng-template #viewTemplate>
+    <app-patient-card [data]="patient"></app-patient-card>
+  </ng-template>
+</ion-content>

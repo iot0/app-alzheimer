@@ -3,7 +3,7 @@
       height: 100%;
       width: 100%;
       display: grid;
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: 2fr 1fr;
       // flex-direction: column;
       // justify-content: center;
       // align-items: center;
@@ -11,6 +11,7 @@
   
       .logo-wrapper {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         // background-image: url("/assets/images/logo.png");
@@ -20,7 +21,7 @@
       }
   
       .logo-text {
-        font-size: 4em;
+        font-size: 3em;
         font-weight: 600;
         font-family: cursive;
         color: var(--ion-color-primary);

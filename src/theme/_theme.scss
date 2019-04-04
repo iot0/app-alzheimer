@@ -35,14 +35,14 @@ $neon: (
 );
 
 $custom: (
-  primary: purple,
+  primary: #328bf3,
   secondary: #ff3a75,
   tertiary: #FF5E79,
   light: #F4EDF2,
   medium: #B682A5,
   dark: #34162A
 ); 
-$kh-theme:map-merge($default,$night);
+$kh-theme:map-merge($default,$custom);
 
 @function kh-theme($key) {
   @return map-get($kh-theme, $key);

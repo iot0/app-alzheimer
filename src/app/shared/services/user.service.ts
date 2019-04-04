@@ -44,6 +44,10 @@ export class UserService {
     return false;
   }
 
+  currentUserObj(): User {
+    return this.userSubject.value;
+  }
+
   async register(user: User) {
     const res = await this.afAuth.auth.createUserWithEmailAndPassword(user.EmailId, user.Password);
     user.Uid = res.user.uid;
@@ -77,10 +81,10 @@ export class UserService {
     });
   }
 
-  getById(docId: string): any {
+  getById(docId: string) {
     return this.firestoreService.docWithId$(`${this.collectionName}/${docId}`);
   }
   updateDoc(updatedUser, docId): any {
-    this.firestoreService.update(`${this.collectionName}/${docId}`, updatedUser);
+    return this.firestoreService.update(`${this.collectionName}/${docId}`, updatedUser);
   }
 }

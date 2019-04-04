@@ -28,7 +28,8 @@ const routes: Routes = [
     path: "welcome",
     loadChildren: "./welcome/welcome.module#WelcomePageModule"
   },
-  { path: "events", loadChildren: "./events/events.module#EventsPageModule" }
+  { path: "events", loadChildren: "./events/events.module#EventsPageModule" },
+  { path: 'patient', loadChildren: './patient/patient.module#PatientPageModule' }
 ];
 
 @NgModule({
