@@ -1,61 +1,61 @@
-import {
-  Directive,
-  NgZone,
-  HostListener,
-  Output,
-  EventEmitter,
-  Input,
-  OnInit
-} from "@angular/core";
-import { ModalController } from "@ionic/angular";
-import { LocationModalComponent } from './location-modal.component';
+import { Directive, Output, EventEmitter, Input, OnInit, ElementRef, Renderer2 } from "@angular/core";
+import { LocationService } from "./location.service";
+import { NgxConfig } from "ngx-map";
+import { convertToBoolProperty } from "../../helper";
 
 @Directive({
   selector: "[appLocation]"
 })
-export class LocationDirective implements OnInit{
-  
-
+export class LocationDirective implements OnInit {
   @Input("appLocation") marker;
-  @Input("enableSelection") enableSelection;
+  @Input("enableSelection")
+  set enableSelection(val) {
+    this._enableSelection = convertToBoolProperty(val);
+  }
+  _enableSelection: boolean = false;
 
-  constructor(private modalCtrl: ModalController) {}
+  @Input("disableOnClickTrigger") disableOnClickTrigger: boolean = false;
+
+  @Output("onSelect")
+  onLocation: EventEmitter<string> = new EventEmitter();
+
+  constructor(private service: LocationService, private element: ElementRef, private renderer: Renderer2) {}
 
   ngOnInit(): void {
-   console.log("Location directive oninit");
-  }
-  @Output("onSelect")
-  onLocation:EventEmitter<any>=new EventEmitter();
-
-  @HostListener("click")
-  async openMap() {
-    let props={};
-    if (this.marker) {
-      try {
-        let marker = JSON.parse(this.marker);
-        if (marker.lat && marker.lng) {
-          props={
-            ...props,
-            marker:marker
-          };
-        }
-      } catch (e) {}
+    console.log("Location directive oninit");
+    if (!this.disableOnClickTrigger) {
+      this.renderer.listen(this.element.nativeElement, "click", this.openMap.bind(this));
     }
-    if(this.enableSelection){
-      props={
+  }
+
+  openMap() {
+    let props: NgxConfig = {};
+    let marker = null;
+    try {
+      if (!this.marker) {
+        marker = { lat: "8.749810", lng: "76.717750" };
+      } else {
+        marker = JSON.parse(this.marker);
+      }
+      if (marker.lat && marker.lng) {
+        props = {
+          ...props,
+          marker: marker
+        };
+      }
+    } catch (e) {}
+    if (this._enableSelection) {
+      props = {
         ...props,
-        enableSelection: this.enableSelection
+        enableSelection: this._enableSelection
       };
     }
-    const modal = await this.modalCtrl.create({
-        component: LocationModalComponent,
-        componentProps:props
-      });
+    this.service.openModal(props).then(modal => {
       modal.onWillDismiss().then(res => {
         if (res.data) {
           this.onLocation.emit(res.data);
         }
-      })
-      return await modal.present();
+      });
+    });
   }
 }

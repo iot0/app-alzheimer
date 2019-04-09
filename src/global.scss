@@ -17,7 +17,14 @@
 .nowrap{
   white-space: nowrap;
 }
-
+.h-100{
+  height:100%;
+}
+.content-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .bg-primary {
   background-color: kh-theme(primary);
 }
@@ -118,7 +125,7 @@
   grid-row-gap: 10px;
 
   .col-item {
-    height: 150px;
+    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -126,7 +133,7 @@
     text-align: center;
     padding: 20px;
     background-color: white;
-
+    align-self: center;
     ion-icon {
       flex: 1;
       font-size: 3em;

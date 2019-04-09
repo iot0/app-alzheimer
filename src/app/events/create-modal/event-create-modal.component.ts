@@ -2,8 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { EventInfo } from "src/app/shared/models/event";
 import { ThemeService } from "src/app/shared/theme/theme.service";
-import { EventsService } from "src/app/shared/services/events.service";
-import { ModalController } from '@ionic/angular';
+import { ModalController } from "@ionic/angular";
+import { UserService } from "src/app/shared/services/user.service";
+import { User } from "src/app/shared/models/user";
 
 @Component({
   selector: "app-event-create-modal",
@@ -12,16 +13,20 @@ import { ModalController } from '@ionic/angular';
 })
 export class EventCreateModalComponent implements OnInit {
   createForm: FormGroup;
-  todaysDate:string=(new Date()).toISOString();
-
-  constructor(private fb: FormBuilder,
-     private themeService: ThemeService,
-     public modalController: ModalController,
-      private eventsService: EventsService) {
+  todaysDate: string = new Date().toISOString();
+  user: User;
+  constructor(
+    private fb: FormBuilder,
+    private themeService: ThemeService,
+    public modalController: ModalController,
+    private userService: UserService
+  ) {
     this.initForm();
   }
 
   ngOnInit() {
+    this.user = this.userService.currentUserObj();
+
     this.createForm.get("isLocationEvent").statusChanges.subscribe(status => {
       if (status === "VALID") {
         this.createForm.get("latLng").enable();
@@ -57,12 +62,14 @@ export class EventCreateModalComponent implements OnInit {
   }
 
   prepareSaveInfo(): EventInfo {
+    let user = this.userService.currentUserObj();
     const formModel = this.createForm.value;
     let event: EventInfo = {
       EventDate: formModel.eventDate,
       Description: formModel.description,
       IsLocationEvent: formModel.isLocationEvent,
-      Title: formModel.title
+      Title: formModel.title,
+      CreatedBy: { Uid: user.Uid, FullName: user.FullName }
     };
     if (event.IsLocationEvent) {
       event.Address = formModel.address;
@@ -71,22 +78,23 @@ export class EventCreateModalComponent implements OnInit {
     return event;
   }
 
-  onSubmit() {
+  async onSubmit() {
     console.log(this.createForm);
     if (this.createForm.valid) {
       this.themeService.progress(true);
       let data = this.prepareSaveInfo();
 
-      this.eventsService.register(data)
-        .then(res => {
-          this.themeService.alert("Success", "Event added successfully");
-        })
-        .catch(err => {
-          this.themeService.alert("Error", "Not able to add this event .");
-        })
-        .finally(() => {
-          this.themeService.progress(false);
-        });
+      try {
+        let res = await this.userService.addEvents(this.user.Patient.Uid, data);
+        this.themeService.alert("Success", "Event added successfully");
+        this.onClose();
+      } catch (err) {
+        console.log(err);
+        await this.themeService.progress(false);
+        this.themeService.alert("Error", "Not able to add this event .");
+      } finally {
+        this.themeService.progress(false);
+      }
     } else {
       this.themeService.alert("Fields Missing", "All Fields are necessary.");
     }

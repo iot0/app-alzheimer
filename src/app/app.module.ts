@@ -17,6 +17,8 @@ import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireMessagingModule } from "@angular/fire/messaging";
 import { AngularFireFunctionsModule } from "@angular/fire/functions";
 import { NgxMapModule } from 'ngx-map';
+import { SharedModule } from './shared/shared.module';
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,6 +27,7 @@ import { NgxMapModule } from 'ngx-map';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
+    HttpClientModule,
     ServiceWorkerModule.register("ngsw-worker.js", {
       enabled: environment.production
     }),
@@ -34,7 +37,8 @@ import { NgxMapModule } from 'ngx-map';
     AngularFireStorageModule,
     AngularFireMessagingModule,
     AngularFireFunctionsModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    SharedModule
   ],
   providers: [
     StatusBar,

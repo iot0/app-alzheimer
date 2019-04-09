@@ -1,48 +1,80 @@
 <ion-header>
-  <ion-toolbar color='primary'>
+  <ion-toolbar color="primary">
     <ion-title>
-      Home
+      <ng-container *ngIf="(userService.isPatient$ | async)">Patient </ng-container>
+      <ng-container *ngIf="(userService.isCareTaker$ | async)">Care Taker </ng-container>
+      Dashboard
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding class="bg-secondary">
-  <div class="col-grid">
-    <!--trips-->
-    <div class="col-item" [routerLink]="['/events']">
-      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
-      <img src="/assets/events.png" alt="">
-      <div class="col-label">
-        Events
-      </div>
-    </div>
-    <div class="col-item" [routerLink]="['/patient']" *ngIf='userService.isCareTaker$|async'>
-      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
-      <img src="/assets/patient.png" alt="">
-      <div class="col-label">
-        Patient
-      </div>
-    </div>
-    <div class="col-item" *ngIf='userService.isPatient$|async'>
-      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
-      <img src="/assets/location.jpg" alt="">
-      <div class="col-label">
-        Home Location
-      </div>
-    </div>
-    <div class="col-item" *ngIf='userService.isPatient$|async'>
-      <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
-      <img src="/assets/family.png" alt="">
-      <div class="col-label">
-        Family
-      </div>
-    </div>
-    <!---->
-    <div class="col-item" (click)="onLogOut()">
-      <ion-icon name="log-out" color='danger'></ion-icon>
-      <div class="col-label">
-        Log Out
-      </div>
+<ion-content>
+  <div class="bg-secondary h-100 content-center">
+    <div class="col-grid">
+      <!--trips-->
+      <ion-card class="col-item" (click)="openEvents()">
+        <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+        <img src="/assets/events.png" alt="" />
+        <div class="col-label">
+          Events
+        </div>
+      </ion-card>
+      <ion-card class="col-item" (click)="viewPatient()" *ngIf="(userService.isCareTaker$ | async)">
+        <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+        <img src="/assets/patient.png" alt="" />
+        <div class="col-label">
+          Patient
+        </div>
+      </ion-card>
+      <ion-card class="col-item" (click)="viewPatient()" *ngIf="(userService.isPatient$ | async)">
+        <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+        <img src="/assets/patient.png" alt="" />
+        <div class="col-label">
+          Profile
+        </div>
+      </ion-card>
+      <ion-card
+        class="col-item"
+        *ngIf="(userService.isPatient$ | async)"
+        (click)="onTracking(user.HomeLatLng)"
+        appLocation
+        disableOnClickTrigger="true"
+      >
+        <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+        <img src="/assets/location.jpg" alt="" />
+        <div class="col-label">
+          Home Location
+        </div>
+      </ion-card>
+      <ion-card
+        class="col-item"
+        *ngIf="(userService.isCareTaker$ | async)"
+        (click)="onTrackingPatient()"
+        appLocation
+        disableOnClickTrigger="true"
+      >
+        <img src="/assets/location.jpg" alt="" />
+        <div class="col-label">
+          Track
+        </div>
+      </ion-card>
+      <ion-card class="col-item" *ngIf="(userService.isPatient$ | async)"  [routerLink]="['/families/',user?.Uid]">
+        <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
+        <img src="/assets/family.png" alt="" />
+        <div class="col-label">
+          Family
+        </div>
+      </ion-card>
+      <!---->
+      <ion-card class="col-item" (click)="onLogOut()">
+        <ion-icon name="log-out" color="danger"></ion-icon>
+        <div class="col-label">
+          Log Out
+        </div>
+      </ion-card>
     </div>
   </div>
 </ion-content>
+<app-drawer [options]="drawerOptions" *ngIf="(userService.isPatient$ | async)" #drawer>
+  <app-device-connect [drawer]="drawer"></app-device-connect>
+</app-drawer>

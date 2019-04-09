@@ -1,5 +1,7 @@
 {
   "name": "app-alzheimer",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

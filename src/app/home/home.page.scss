@@ -1,1 +1,20 @@
-
+:host {
+  ion-footer {
+    button {
+      margin: 0 !important;
+      .button-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      ion-icon {
+        font-size: 2.5em;
+      }
+    }
+  }
+  app-drawer {
+    ion-content {
+      margin-top: 56px !important;
+    }
+  }
+}

@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { EventCreateModalComponent } from "./create-modal/event-create-modal.component";
-import { EventsService } from "../shared/services/events.service";
 import { catchError, takeUntil, takeWhile } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
+import { UserService } from "../shared/services/user.service";
+import { User, UserRole } from "../shared/models/user";
 
 @Component({
   selector: "app-events",
@@ -13,13 +14,26 @@ import { BehaviorSubject } from "rxjs";
 export class EventsPage implements OnInit, OnDestroy {
   data$: BehaviorSubject<any> = new BehaviorSubject({ loading: true });
   isAlive: boolean = true;
-  constructor(public modalController: ModalController, private eventsService: EventsService) {}
+  user: User;
+  constructor(public modalController: ModalController, private userService: UserService) {}
 
   ngOnInit() {
-    this.eventsService
-      .get()
+    this.user = this.userService.currentUserObj();
+    this.loadEvents();
+  }
+
+  loadEvents() {
+    let service;
+    if (this.user.Role == UserRole.CareTaker) {
+      service = this.userService.getEventsByCreatedBy(this.user.Patient.Uid, this.user.Uid);
+    } else {
+      service = this.userService.getEvents(this.user.Uid);
+    }
+    
+    service
       .pipe(
         catchError(err => {
+          console.log(err);
           this.data$.next({ error: true });
           return err;
         }),

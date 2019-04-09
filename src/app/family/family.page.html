@@ -1,0 +1,43 @@
+<ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Family</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content padding>
+    <!-- New family form section-->
+    <ng-container *ngIf="mode === 'new'; else existingTemplate">
+      <app-family-form (success)="afterRegistration($event)" [patientId]='patientId'></app-family-form>
+    </ng-container>
+  
+    <!--Existing family section .-->
+    <ng-template #existingTemplate>
+      <ng-container *ngIf="(data$ | async) as res">
+        <ng-container *ngIf="res.data; else notificationTemplate">
+          <div class="position-relative">
+            <!--family view section-->
+            <app-family-card [data]="res.data"></app-family-card>
+            <!--Notification on family error section-->
+            <ng-template #notificationTemplate>
+              <ng-container *ngIf="res.error || res.empty; else loadingTemplate">
+                <div class="item-center" [hidden]="!res.error">
+                  Something went wrong , Try again later .
+                </div>
+                <div class="item-center" [hidden]="!res.empty">
+                  Invalid family
+                </div>
+              </ng-container>
+            </ng-template>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-template>
+  </ion-content>
+  
+  <!--Loading template section-->
+  <ng-template #loadingTemplate>
+    <div class="item-center">
+      <ion-spinner name="lines"></ion-spinner>
+    </div>
+  </ng-template>
+  

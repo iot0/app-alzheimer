@@ -6,12 +6,16 @@ import { AngularFirestoreCollection } from "@angular/fire/firestore";
 import { Router } from "@angular/router";
 import { FirestoreService } from "./firestore.service";
 import { AngularFireAuth } from "@angular/fire/auth";
+import { EventInfo } from "../models/event";
+import { Family } from '../models/family';
 
 @Injectable({
   providedIn: "root"
 })
 export class UserService {
   collectionName: string = "Users";
+  eventSubCollectionName: string = "Events";
+  familySubCollectionName: string = "Families";
   localKey: string = "user";
   userSubject: BehaviorSubject<User> = new BehaviorSubject(null);
 
@@ -32,12 +36,8 @@ export class UserService {
   );
 
   userCollection: AngularFirestoreCollection<User>;
-  constructor(private router: Router, private firestoreService: FirestoreService, public afAuth: AngularFireAuth) {
-    const user = window.localStorage[this.localKey];
-    if (user) {
-      this.userSubject.next(JSON.parse(user));
-    }
-  }
+
+  constructor(private router: Router, private firestoreService: FirestoreService, public afAuth: AngularFireAuth) {}
 
   isAuthenticated(): boolean {
     if (this.userSubject.value) return true;
@@ -61,30 +61,90 @@ export class UserService {
 
     // get user details
 
-    return await this.firestoreService
-      .doc$<User>(`${this.collectionName}/${user.Uid}`)
-      .pipe(
-        tap(user => {
-          window.localStorage[this.localKey] = JSON.stringify(user);
-          this.userSubject.next(user);
-        }),
-        first()
-      )
-      .toPromise();
+    let userDoc = await this.getUserDetailsAsAsync(user.Uid);
+
+    window.localStorage[this.localKey] = JSON.stringify(userDoc);
+    this.userSubject.next(userDoc);
+
+    return userDoc;
   }
 
   async logOut() {
-    await this.afAuth.auth.signOut();
+    const user = window.localStorage[this.localKey];
+    if (user != null) await this.afAuth.auth.signOut();
     this.router.navigate(["/welcome"]).then(() => {
-      this.userSubject.next(null);
-      window.localStorage.removeItem(this.localKey);
+      this.clearUserJwt();
     });
   }
 
-  getById(docId: string) {
+  clearUserJwt() {
+    this.userSubject.next(null);
+    window.localStorage.removeItem(this.localKey);
+  }
+
+  async getUserDetailsAsAsync(uid: string) {
+    return await this.firestoreService
+      .doc$<User>(`${this.collectionName}/${uid}`)
+      .pipe(first())
+      .toPromise();
+  }
+  getUserDetails(docId: string) {
     return this.firestoreService.docWithId$(`${this.collectionName}/${docId}`);
   }
+
+  async refreshUserDetails() {
+    const userString = window.localStorage[this.localKey];
+    if (userString != null && userString != "") {
+      let user = JSON.parse(userString);
+      if (user && user.Uid) {
+        user = await this.getUserDetailsAsAsync(user.Uid);
+        window.localStorage[this.localKey] = JSON.stringify(user);
+        this.userSubject.next(user);
+        return true;
+      }
+    }
+    this.clearUserJwt();
+    return false;
+  }
+
   updateDoc(updatedUser, docId): any {
     return this.firestoreService.update(`${this.collectionName}/${docId}`, updatedUser);
+  }
+
+  addEvents(userId: string, data: EventInfo) {
+    return this.firestoreService.add(`${this.collectionName}/${userId}/${this.eventSubCollectionName}`, data);
+  }
+
+  getEvents(userId: string): any {
+    return this.firestoreService.colWithIds$(`${this.collectionName}/${userId}/${this.eventSubCollectionName}`, q => {
+      return q.limit(30).orderBy("CreatedAt", "desc");
+    });
+  }
+
+  async addFamily(userId: string, data: Family) {
+    return await this.firestoreService.add(`${this.collectionName}/${userId}/${this.familySubCollectionName}`, data);
+  }
+
+  getFamilies(userId: string): any {
+    return this.firestoreService.colWithIds$(`${this.collectionName}/${userId}/${this.familySubCollectionName}`, q => {
+      return q.limit(30).orderBy("CreatedAt", "desc");
+    });
+  }
+
+  getFamily(userId: string,familyId:string): any {
+    return this.firestoreService.doc$(`${this.collectionName}/${userId}/${this.familySubCollectionName}/${familyId}`)
+  }
+
+  getEventsByCreatedBy(userId: string, createdById: string): any {
+    return this.firestoreService.colWithIds$(`${this.collectionName}/${userId}/${this.eventSubCollectionName}`, q => {
+      return q
+        .where("CreatedBy.Uid", "==", createdById)
+        .limit(30)
+        .orderBy("CreatedAt", "desc");
+    });
+  }
+
+  async connectDevice(patientId: string,ip:string) {
+    return this.firestoreService.update<User>(`${this.collectionName}/${patientId}`, { DeviceIp:ip});
   }
 }

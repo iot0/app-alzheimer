@@ -7,11 +7,15 @@ export class User {
   Role?:UserRole;
   Password?:string;
   Address?:string;
-  LatLng?:string;
+  HomeLatLng?:string;
+  CurrentLatLng?:string;
   PhoneNumber?:string;
-  PatientId?:string;
+  Patient?:User;
+  Relation?:string;
+  DOB?:Date;
+  DeviceIp?:string;
 }
 export enum UserRole{
     CareTaker=1,
-    Patient,
+    Patient
 }

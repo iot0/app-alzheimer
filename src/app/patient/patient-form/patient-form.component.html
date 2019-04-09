@@ -37,7 +37,7 @@
         </ion-text>
         <p>Latitude and longitude .</p>
       </ion-label>
-      <ion-fab-button appLocation enableSelection="true" color="secondary" (onSelect)="onLocationSelect($event)">
+      <ion-fab-button slot='end' [appLocation]="createForm.get('latLng').value" enableSelection="true" color="secondary" (onSelect)="onLocationSelect($event)">
         <ion-icon name="compass"></ion-icon>
       </ion-fab-button>
     </ion-item-divider>

@@ -8,7 +8,7 @@ import { UserService } from '../shared/services/user.service';
 })
 export class WelcomePage implements OnInit {
 
-  constructor(private user:UserService) { }
+  constructor(public user:UserService) { }
 
   ngOnInit() {
   }

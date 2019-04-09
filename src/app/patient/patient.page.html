@@ -1,14 +1,74 @@
 <ion-header>
   <ion-toolbar color="secondary">
-    <ion-title>Patient</ion-title>
+    <ion-title>
+      <ng-container *ngIf="(userService.isCareTaker$ | async); else patientTitleTemplate">
+        {{ patientFormMode === "edit" ? "Update Patient Details" : patientFormMode === "new" ? "Add your Patient" : "Your Patient" }}
+      </ng-container>
+      <ng-template #patientTitleTemplate>
+        Your Profile
+      </ng-template>
+    </ion-title>
+    <!-- <ion-buttons slot="end" *ngIf="(userService.isCareTaker$ | async)">
+      <ion-button color="primary" (click)="onEdit()" *ngIf="isPatientAdded && patientFormMode !== 'edit'">
+        Edit
+      </ion-button>
+      <ion-button color="primary" (click)="onCancel()" *ngIf="isPatientAdded && patientFormMode === 'edit'">
+        Cancel
+      </ion-button>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-  <ng-container *ngIf="!isPatientAdded; else viewTemplate">
-    <app-patient-form [careTakerId]="currentUser.Uid"></app-patient-form>
+<ion-content>
+  <!-- New patient form section-->
+  <ng-container *ngIf="mode === 'new'; else existingTemplate">
+    <app-patient-form
+      (success)="afterRegistration($event)"
+      (onSuccess)="afterRegistration($event)"
+      [data]="patient"
+      [mode]="mode"
+    ></app-patient-form>
   </ng-container>
-  <ng-template #viewTemplate>
-    <app-patient-card [data]="patient"></app-patient-card>
+
+  <!--Existing patient section .-->
+  <ng-template #existingTemplate>
+    <ng-container *ngIf="(data$ | async) as res">
+      <ng-container *ngIf="res.data; else notificationTemplate">
+        <div class="position-relative">
+          <!--Patient view section-->
+          <app-patient-card [data]="res.data"></app-patient-card>
+          <!--Notification on patient error section-->
+          <ng-template #notificationTemplate>
+            <ng-container *ngIf="res.error || res.empty; else loadingTemplate">
+              <div class="item-center" [hidden]="!res.error">
+                Something went wrong , Try again later .
+              </div>
+              <div class="item-center" [hidden]="!res.empty">
+                Invalid Patient
+              </div>
+            </ng-container>
+          </ng-template>
+        </div>
+      </ng-container>
+    </ng-container>
   </ng-template>
 </ion-content>
+<ion-footer *ngIf="mode === 'existing'">
+  <ion-toolbar color="warning">
+    <ion-title>
+      Families
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="secondary" (click)='goToFamilies()'>
+        <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+
+<!--Loading template section-->
+<ng-template #loadingTemplate>
+  <div class="item-center">
+    <ion-spinner name="lines"></ion-spinner>
+  </div>
+</ng-template>

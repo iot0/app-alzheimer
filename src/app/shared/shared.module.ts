@@ -1,14 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LocationModule } from './components/location/location.module';
+import { DrawerComponent } from './components/drawer/drawer.component';
+import { IonicModule } from '@ionic/angular';
+import { DeviceConnectComponent } from './components/device-connect/device-connect.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [DrawerComponent,DeviceConnectComponent],
   imports: [
     CommonModule,
-    LocationModule
+    LocationModule,
+    IonicModule
   ],
-  exports:[LocationModule],
+  exports:[LocationModule,DrawerComponent,DeviceConnectComponent],
   entryComponents:[]
 })
 export class SharedModule { }

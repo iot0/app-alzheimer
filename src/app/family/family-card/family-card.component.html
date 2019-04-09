@@ -1,0 +1,17 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>{{ data.FullName }}</ion-card-title>
+    <ion-card-subtitle>Email :{{ data.EmailId }}</ion-card-subtitle>
+    <ion-card-subtitle>Phone :{{ data.PhoneNumber }}</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <p>Age: {{ calculateAge(data?.DOB) }}</p>
+    <p>Record Created Date : {{ data?.CreatedAt ? (data?.CreatedAt.toDate() | date) : "" }}</p>
+  </ion-card-content>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button [appLocation]="data.LatLng">
+      <ion-icon name="compass"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-card>

@@ -1,3 +1,5 @@
+import { User } from './user';
+
 export class EventInfo {
    Id?:number; 
    Title:string;
@@ -6,4 +8,5 @@ export class EventInfo {
    LatLng?:string;
    Address?:string;
    Description:string;
+   CreatedBy?:User;
 }

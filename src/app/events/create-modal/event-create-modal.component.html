@@ -36,16 +36,14 @@
       <ion-item>
         <ion-datetime formControlName="eventDate" display-format="MMM DD, YYYY HH:mm" placeholder="Select Date and Time" [min]='todaysDate'></ion-datetime>
       </ion-item>
-      <ion-item-divider>
+      <ion-item-divider class="ion-padding-end">
         <ion-label>
           <ion-text color="primary">
             <h2>IS LOCATION EVENT</h2>
           </ion-text>
         </ion-label>
+        <ion-checkbox slot='end' formControlName="isLocationEvent" color="primary"></ion-checkbox>
       </ion-item-divider>
-      <ion-item>
-        <ion-checkbox formControlName="isLocationEvent" color="primary"></ion-checkbox>
-      </ion-item>
       <ng-container *ngIf="createForm.get('isLocationEvent').value">
         <ion-item-divider>
           <ion-label>

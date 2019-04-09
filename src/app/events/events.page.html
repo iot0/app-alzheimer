@@ -58,7 +58,7 @@
     </ng-template>
   </ng-container>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed"  *ngIf="(userService.isCareTaker$ | async)">
     <ion-fab-button (click)="onEventCreate()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
