@@ -7,6 +7,7 @@ import { of, timer, Subscription } from "rxjs";
 import { UserService } from "../../services/user.service";
 import { User } from "../../models/user";
 import { HttpClient } from "@angular/common/http";
+import { NativeRingtones } from '@ionic-native/native-ringtones/ngx';
 
 export type ConnectionStatus = "connecting" | "pendingSetup" | "connected" | "error" | "updateSetup";
 @Component({
@@ -27,7 +28,8 @@ export class DeviceConnectComponent implements OnInit {
     private deviceService: DeviceService,
     private http: HttpClient,
     private userService: UserService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private ringtones: NativeRingtones
   ) {}
 
   ngOnInit() {
@@ -79,6 +81,9 @@ export class DeviceConnectComponent implements OnInit {
           console.log(res);
           this.deviceData = res;
           this.connectionStatus = "connected";
+          if(res && res["buttonStatus"]){
+            this.ringPhone();
+          }
         }),
         catchError(err => {
           console.log(err);
@@ -109,5 +114,9 @@ export class DeviceConnectComponent implements OnInit {
   }
   onRefresh() {
     this.onSync(this.user.DeviceIp);
+  }
+
+  ringPhone(){
+    this.ringtones.getRingtone().then((ringtones) => { console.log(ringtones); });
   }
 }

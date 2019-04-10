@@ -19,6 +19,7 @@ import { AngularFireFunctionsModule } from "@angular/fire/functions";
 import { NgxMapModule } from 'ngx-map';
 import { SharedModule } from './shared/shared.module';
 import { HttpClientModule } from "@angular/common/http";
+import { NativeRingtones } from '@ionic-native/native-ringtones/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -43,6 +44,7 @@ import { HttpClientModule } from "@angular/common/http";
   providers: [
     StatusBar,
     SplashScreen,
+    NativeRingtones,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

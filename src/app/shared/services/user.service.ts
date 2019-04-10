@@ -7,7 +7,7 @@ import { Router } from "@angular/router";
 import { FirestoreService } from "./firestore.service";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { EventInfo } from "../models/event";
-import { Family } from '../models/family';
+import { Family } from "../models/family";
 
 @Injectable({
   providedIn: "root"
@@ -94,13 +94,18 @@ export class UserService {
 
   async refreshUserDetails() {
     const userString = window.localStorage[this.localKey];
-    if (userString != null && userString != "") {
-      let user = JSON.parse(userString);
-      if (user && user.Uid) {
-        user = await this.getUserDetailsAsAsync(user.Uid);
-        window.localStorage[this.localKey] = JSON.stringify(user);
-        this.userSubject.next(user);
-        return true;
+    if (userString != null && userString != "" && userString != "undefined") {
+      try {
+        let user = JSON.parse(userString);
+        if (user && user.Uid) {
+          user = await this.getUserDetailsAsAsync(user.Uid);
+          window.localStorage[this.localKey] = JSON.stringify(user);
+          this.userSubject.next(user);
+          return true;
+        }
+      } catch (err) {
+        this.clearUserJwt();
+        return false;
       }
     }
     this.clearUserJwt();
@@ -131,8 +136,8 @@ export class UserService {
     });
   }
 
-  getFamily(userId: string,familyId:string): any {
-    return this.firestoreService.doc$(`${this.collectionName}/${userId}/${this.familySubCollectionName}/${familyId}`)
+  getFamily(userId: string, familyId: string): any {
+    return this.firestoreService.doc$(`${this.collectionName}/${userId}/${this.familySubCollectionName}/${familyId}`);
   }
 
   getEventsByCreatedBy(userId: string, createdById: string): any {
@@ -144,7 +149,7 @@ export class UserService {
     });
   }
 
-  async connectDevice(patientId: string,ip:string) {
-    return this.firestoreService.update<User>(`${this.collectionName}/${patientId}`, { DeviceIp:ip});
+  async connectDevice(patientId: string, ip: string) {
+    return this.firestoreService.update<User>(`${this.collectionName}/${patientId}`, { DeviceIp: ip });
   }
 }
