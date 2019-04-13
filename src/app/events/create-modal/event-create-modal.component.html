@@ -24,7 +24,7 @@
         </ion-label>
       </ion-item-divider>
       <ion-item>
-        <ion-input formControlName="title" type="text" placeholder="Hut"></ion-input>
+        <ion-input formControlName="title" type="text" placeholder="Event title"></ion-input>
       </ion-item>
       <ion-item-divider>
         <ion-label>
@@ -34,7 +34,7 @@
         </ion-label>
       </ion-item-divider>
       <ion-item>
-        <ion-datetime formControlName="eventDate" display-format="MMM DD, YYYY HH:mm" placeholder="Select Date and Time" [min]='todaysDate'></ion-datetime>
+        <ion-datetime [value]='todaysDate' formControlName="eventDate" displayFormat="MMM DD, h:mm A" placeholder="Select Date and Time" max="2100"></ion-datetime>
       </ion-item>
       <ion-item-divider class="ion-padding-end">
         <ion-label>

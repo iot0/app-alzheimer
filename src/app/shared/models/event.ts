@@ -1,9 +1,9 @@
 import { User } from './user';
 
 export class EventInfo {
-   Id?:number; 
+   Id?:string; 
    Title:string;
-   EventDate:Date;
+   EventDate:number;
    IsLocationEvent:boolean;
    LatLng?:string;
    Address?:string;

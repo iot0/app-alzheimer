@@ -2,13 +2,13 @@
   <ion-toolbar color="primary">
     <ion-title>Events</ion-title>
   </ion-toolbar>
-  <ion-toolbar>
-    <ion-segment (ionChange)="onEventSegmentChange($event)" value="toCome">
-      <ion-segment-button value="toCome">
-        <ion-icon name="clock"></ion-icon>
-      </ion-segment-button>
-      <ion-segment-button value="history">
+  <ion-toolbar *ngIf="(userService.isPatient$ | async)" color="secondary">
+    <ion-segment (ionChange)="onEventSegmentChange($event)" value="all" #segment>
+      <ion-segment-button value="all">
         <ion-icon name="clipboard"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="registered">
+        <ion-icon name="clock"></ion-icon>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -20,19 +20,22 @@
       <div class="position-relative">
         <ion-list lines="inset">
           <ion-item *ngFor="let event of res.data">
+            <ion-avatar slot="start">
+              <img [src]="getImagePath(event.EventDate)" />
+            </ion-avatar>
             <ion-label text-wrap>
               <ion-text color="primary">
                 <h3>{{ event.Title }}</h3>
               </ion-text>
               <p>{{ event.Description }}</p>
               <ion-text>
-                <p>Time {{ event.EventDate | date: "yyyy/MM/dd 'at' HH:mm:ss" }}</p>
+                <p>Time {{ newDate(event.EventDate) | date: "yyyy/MM/dd 'at' HH:mm:ss" }}</p>
               </ion-text>
-              <ion-text *ngIf='event.IsLocationEvent'>
+              <ion-text *ngIf="event.IsLocationEvent">
                 <h4>{{ event.Address }}</h4>
               </ion-text>
             </ion-label>
-            <ion-fab vertical="bottom" horizontal="end" *ngIf='event.IsLocationEvent'>
+            <ion-fab vertical="bottom" horizontal="end" *ngIf="event.IsLocationEvent">
               <ion-fab-button [appLocation]="event?.LatLng" color="light">
                 <ion-icon name="compass"></ion-icon>
               </ion-fab-button>
@@ -58,7 +61,7 @@
     </ng-template>
   </ng-container>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed"  *ngIf="(userService.isCareTaker$ | async)">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="(userService.isCareTaker$ | async)">
     <ion-fab-button (click)="onEventCreate()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>

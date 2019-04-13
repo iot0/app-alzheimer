@@ -1,0 +1,14 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>{{ event.Title }}</ion-card-title>
+  </ion-card-header>
+  <div class="card-img">
+    <img src="/assets/alarm.gif" alt="" />
+  </div>
+  <ion-card-content>
+    <p>{{ event.Description }}</p>
+    <p>{{ newDate(event.EventDate)|date }}</p>
+    <p>Don't miss this event.</p>
+    <ion-button expand="full" (click)="onClose()" color="secondary">Close</ion-button>
+  </ion-card-content>
+</ion-card>

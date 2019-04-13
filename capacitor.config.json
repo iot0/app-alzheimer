@@ -1,0 +1,6 @@
+{
+  "appId": "net.keephacking.alzheimer",
+  "appName": "alzheimer",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}

@@ -1,5 +1,5 @@
 {
-  "name": "app-alzheimer",
+  "name": "alzheimer",
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
@@ -23,15 +23,31 @@
     "@angular/pwa": "^0.12.4",
     "@angular/router": "^7.2.2",
     "@angular/service-worker": "^7.2.2",
+    "@capacitor/android": "^1.0.0-beta.19",
+    "@capacitor/cli": "^1.0.0-beta.19",
+    "@capacitor/core": "^1.0.0-beta.19",
+    "@ionic-native/background-mode": "^5.4.0",
+    "@ionic-native/camera": "^5.4.0",
     "@ionic-native/core": "^5.0.0",
+    "@ionic-native/geolocation": "^5.4.0",
+    "@ionic-native/local-notifications": "^5.4.0",
+    "@ionic-native/native-audio": "^5.4.0",
     "@ionic-native/native-ringtones": "^5.4.0",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.1.0",
     "@ionic/pro": "2.0.4",
-    "cordova-android": "8.0.0",
+    "cordova": "9.0.0",
+    "cordova-plugin-background-mode": "git+https://github.com/tushe/cordova-plugin-background-mode.git",
+    "cordova-plugin-badge": "^0.8.8",
+    "cordova-plugin-camera": "4.0.3",
+    "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-file": "6.0.1",
+    "cordova-plugin-geolocation": "4.0.1",
+    "cordova-plugin-local-notification": "0.9.0-beta.2",
+    "cordova-plugin-media": "^5.0.2",
     "cordova-plugin-native-ringtones": "0.2.5",
+    "cordova-plugin-nativeaudio": "3.0.9",
     "core-js": "^2.5.4",
     "firebase": "^5.9.2",
     "hammerjs": "^2.0.8",
@@ -53,7 +69,6 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~10.12.0",
     "codelyzer": "~4.5.0",
-    "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-ionic-keyboard": "^2.1.3",
     "cordova-plugin-ionic-webview": "^3.1.2",
     "cordova-plugin-splashscreen": "^5.0.2",
@@ -85,10 +100,12 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-native-ringtones": {}
+      "cordova-plugin-native-ringtones": {},
+      "cordova-plugin-nativeaudio": {},
+      "cordova-plugin-camera": {},
+      "cordova-plugin-geolocation": {},
+      "cordova-plugin-local-notification": {}
     },
-    "platforms": [
-      "android"
-    ]
+    "platforms": []
   }
 }

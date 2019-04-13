@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { User, UserRole } from "../shared/models/user";
 import { UserService } from "../shared/services/user.service";
-import { first, catchError } from "rxjs/operators";
+import { first, catchError, tap } from "rxjs/operators";
 import { ThemeService } from "../shared/theme/theme.service";
 import { FormMode } from "../shared/models/form";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -15,7 +15,6 @@ import { BehaviorSubject } from "rxjs";
 export class PatientPage implements OnInit {
   currentUser: User;
   isPatientAdded: boolean = false;
-  patient: User;
   mode: FormMode = "existing";
   data$: BehaviorSubject<any> = new BehaviorSubject({ loading: true });
 
@@ -24,19 +23,22 @@ export class PatientPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.route.params.subscribe(param => {
-      console.log(param);
-      if (param.id && param.id != "undefined") {
-        // loading patient details
-        this.loadDetails(param.id);
-      } else {
-        this.mode = "new";
-      }
-    });
+    let param = await this.route.params.pipe(first()).toPromise();
+    console.log(param);
+    if (param.id && param.id != "undefined" && param.edit) {
+      // loading patient details
+      await this.loadDetails(param.id);
+      this.mode = "edit";
+    } else if (param.id && param.id != "undefined") {
+      this.loadDetails(param.id);
+      this.mode = "existing";
+    } else {
+      this.mode = "new";
+    }
   }
 
-  loadDetails(patientId: string) {
-    this.userService
+  async loadDetails(patientId: string) {
+    return await this.userService
       .getUserDetails(patientId)
       .pipe(
         catchError(err => {
@@ -44,29 +46,34 @@ export class PatientPage implements OnInit {
           this.data$.next({ error: true });
           return err;
         }),
-        first()
+        first(),
+        tap(res => {
+          if (res) {
+            this.isPatientAdded = true;
+            this.data$.next({ data: res });
+          } else this.data$.next({ empty: true });
+        })
       )
-      .subscribe(res => {
-        console.log(res);
-        if (res) this.data$.next({ data: res });
-        else this.data$.next({ empty: true });
-      });
+      .toPromise();
   }
   afterRegistration(uid: string) {
+    console.log(`After registration ${uid}`);
     this.router.navigate([`/patient/${uid}`]);
   }
-  onEdit() {
-    this.mode = "edit";
-  }
 
+  onEdit() {
+    let patient: User = this.data$.value.data;
+    this.router.navigate([`/patient/edit/${patient.Uid}`]);
+  }
+  onCancel() {
+    let patient: User = this.data$.value.data;
+    this.router.navigate([`/patient/${patient.Uid}`]);
+  }
   goToFamilies() {
     if (this.currentUser.Role === UserRole.CareTaker) {
       this.router.navigate([`/families/${this.currentUser.Patient.Uid}`]);
     } else {
       this.router.navigate([`/families/${this.currentUser.Uid}`]);
     }
-  }
-  onCancel() {
-    this.mode = "existing";
   }
 }

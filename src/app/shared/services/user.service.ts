@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { User, UserRole } from "../models/user";
 import { map, tap, first } from "rxjs/operators";
@@ -12,7 +12,8 @@ import { Family } from "../models/family";
 @Injectable({
   providedIn: "root"
 })
-export class UserService {
+export class UserService implements OnInit{
+  
   collectionName: string = "Users";
   eventSubCollectionName: string = "Events";
   familySubCollectionName: string = "Families";
@@ -37,7 +38,13 @@ export class UserService {
 
   userCollection: AngularFirestoreCollection<User>;
 
-  constructor(private router: Router, private firestoreService: FirestoreService, public afAuth: AngularFireAuth) {}
+  constructor(private firestoreService: FirestoreService, public afAuth: AngularFireAuth) {
+    
+  }
+
+  ngOnInit(){
+    
+  }
 
   isAuthenticated(): boolean {
     if (this.userSubject.value) return true;
@@ -72,9 +79,7 @@ export class UserService {
   async logOut() {
     const user = window.localStorage[this.localKey];
     if (user != null) await this.afAuth.auth.signOut();
-    this.router.navigate(["/welcome"]).then(() => {
-      this.clearUserJwt();
-    });
+    this.clearUserJwt();
   }
 
   clearUserJwt() {
@@ -112,7 +117,7 @@ export class UserService {
     return false;
   }
 
-  updateDoc(updatedUser, docId): any {
+  updateDoc(updatedUser: User, docId: string) {
     return this.firestoreService.update(`${this.collectionName}/${docId}`, updatedUser);
   }
 
@@ -120,9 +125,35 @@ export class UserService {
     return this.firestoreService.add(`${this.collectionName}/${userId}/${this.eventSubCollectionName}`, data);
   }
 
-  getEvents(userId: string): any {
+  getEvents(userId: string) {
     return this.firestoreService.colWithIds$(`${this.collectionName}/${userId}/${this.eventSubCollectionName}`, q => {
-      return q.limit(30).orderBy("CreatedAt", "desc");
+      return q.limit(30).orderBy("EventDate", "desc");
+    });
+  }
+
+  getEventToNotify(userId: string) {
+    console.log(new Date().getUTCMilliseconds());
+    console.log(new Date().getTime());
+    return this.firestoreService.colWithIds$(`${this.collectionName}/${userId}/${this.eventSubCollectionName}`, q => {
+      return (
+        q
+          .orderBy("EventDate", "asc")
+          .where("EventDate", ">=", new Date().getTime())
+          // .startAt(new Date().getTime())
+          .limit(10)
+      );
+    });
+  }
+
+  getPastEvent(userId: string) {
+    return this.firestoreService.colWithIds$(`${this.collectionName}/${userId}/${this.eventSubCollectionName}`, q => {
+      return (
+        q
+          .orderBy("EventDate", "asc")
+          .where("EventDate", "<", new Date().getTime())
+          // .startAt(new Date().getTime())
+          .limit(10)
+      );
     });
   }
 
@@ -145,7 +176,7 @@ export class UserService {
       return q
         .where("CreatedBy.Uid", "==", createdById)
         .limit(30)
-        .orderBy("CreatedAt", "desc");
+        .orderBy("EventDate", "desc");
     });
   }
 

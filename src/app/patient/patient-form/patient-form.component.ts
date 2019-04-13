@@ -3,8 +3,9 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { UserService } from "src/app/shared/services/user.service";
 import { ThemeService } from "src/app/shared/theme/theme.service";
 import { User, UserRole } from "../../shared/models/user";
-import { Router } from "@angular/router";
 import { FormMode } from "src/app/shared/models/form";
+import { AngularFireUploadTask, AngularFireStorage } from "@angular/fire/storage";
+import { finalize } from "rxjs/operators";
 
 @Component({
   selector: "app-patient-form",
@@ -13,7 +14,7 @@ import { FormMode } from "src/app/shared/models/form";
 })
 export class PatientFormComponent implements OnInit, OnChanges {
   createForm: FormGroup;
-  user:User;
+  user: User;
   @Input("data")
   data: User;
   @Input("mode")
@@ -22,12 +23,17 @@ export class PatientFormComponent implements OnInit, OnChanges {
   @Output()
   onSuccess: EventEmitter<string> = new EventEmitter();
 
-  constructor(private fb: FormBuilder, private themeService: ThemeService, private userService: UserService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private themeService: ThemeService,
+    private userService: UserService,
+    private storage: AngularFireStorage
+  ) {
     this.initForm();
   }
 
   ngOnInit() {
-    this.user=this.userService.currentUserObj();
+    this.user = this.userService.currentUserObj();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -36,7 +42,9 @@ export class PatientFormComponent implements OnInit, OnChanges {
 
       this.createForm.reset();
 
-      if (mode === "edit") {
+      if (mode === "edit" && this.data) {
+        console.log("mode changed");
+        console.log(this.data);
         this.patchForm(this.data);
       }
     }
@@ -49,7 +57,8 @@ export class PatientFormComponent implements OnInit, OnChanges {
       fullName: ["", Validators.required],
       phoneNumber: ["", Validators.required],
       latLng: ["", Validators.required],
-      address: ["", Validators.required]
+      address: ["", Validators.required],
+      imagePath: ["", Validators.required]
     });
   }
 
@@ -59,8 +68,9 @@ export class PatientFormComponent implements OnInit, OnChanges {
       phoneNumber: data.PhoneNumber,
       latLng: data.HomeLatLng,
       address: data.Address,
-      emailId:data.EmailId,
-      password:"password"
+      emailId: data.EmailId,
+      imagePath:data.ImagePath,
+      password: "password"
     });
 
     this.createForm.get("emailId").disable();
@@ -72,6 +82,44 @@ export class PatientFormComponent implements OnInit, OnChanges {
     }
   }
 
+  async onImageSelect(e: AngularFireUploadTask) {
+    await this.themeService.progress(true);
+    e.then(
+      res => {
+        this.themeService.progress(false);
+        this.themeService.toast("Image uploaded successfully .");
+        if (res) {
+          this.createForm.get("imagePath").setValue(res.ref.fullPath);
+          console.log(res);
+          e.snapshotChanges()
+            .pipe(
+              finalize(() => {
+                this.storage
+                  .ref(res.ref.fullPath)
+                  .getDownloadURL()
+                  .subscribe(res => {
+                    this.createForm.get("imagePath").setValue(res);
+                  });
+              })
+            )
+            .subscribe();
+        }
+      },
+      err => {
+        console.log(err);
+        this.themeService.toast("Sorry something went wrong .");
+        this.themeService.progress(false);
+      }
+    ).catch(err => {
+      console.log(err);
+      this.themeService.toast("Sorry something went wrong .");
+      this.themeService.progress(false);
+    });
+  }
+  onImageError(e) {
+    console.log(e);
+    this.themeService.toast("Sorry something went wrong .");
+  }
   prepareSaveInfo(): User {
     const formModel = this.createForm.value;
     if (this.mode === "new") {
@@ -82,14 +130,16 @@ export class PatientFormComponent implements OnInit, OnChanges {
         Password: formModel.password,
         Address: formModel.address,
         HomeLatLng: formModel.latLng as string,
-        PhoneNumber: formModel.phoneNumber as string
+        PhoneNumber: formModel.phoneNumber as string,
+        ImagePath:formModel.imagePath as string
       };
     } else {
       return {
         FullName: formModel.fullName,
         Address: formModel.address,
         HomeLatLng: formModel.latLng as string,
-        PhoneNumber: formModel.phoneNumber as string
+        PhoneNumber: formModel.phoneNumber as string,
+        ImagePath:formModel.imagePath as string
       };
     }
   }
@@ -104,14 +154,15 @@ export class PatientFormComponent implements OnInit, OnChanges {
         if (this.mode === "new") {
           let patient = await this.userService.register(data);
 
-          let careTaker: User = { Patient:{Uid:patient.Uid,FullName:patient.FullName}, Id: this.user.Uid };
+          let careTaker: User = { Patient: { Uid: patient.Uid, FullName: patient.FullName }, Id: this.user.Uid };
 
           let updateRes = await this.userService.updateDoc(careTaker, this.user.Uid);
+          await this.userService.refreshUserDetails();
 
           this.themeService.alert("Success", "Patient registered successfully .");
           this.onSuccess.emit(patient.Uid);
+          
         } else {
-
           let updateRes = await this.userService.updateDoc(data, this.data.Uid);
           this.themeService.alert("Success", "Patient updated successfully .");
           this.onSuccess.emit(this.data.Uid);

@@ -8,24 +8,23 @@
         Your Profile
       </ng-template>
     </ion-title>
-    <!-- <ion-buttons slot="end" *ngIf="(userService.isCareTaker$ | async)">
-      <ion-button color="primary" (click)="onEdit()" *ngIf="isPatientAdded && patientFormMode !== 'edit'">
+    <ion-buttons slot="end" *ngIf="(userService.isCareTaker$ | async)">
+      <ion-button color="primary" (click)="onEdit()" *ngIf="isPatientAdded && mode !== 'edit'">
         Edit
       </ion-button>
-      <ion-button color="primary" (click)="onCancel()" *ngIf="isPatientAdded && patientFormMode === 'edit'">
+      <ion-button color="primary" (click)="onCancel()" *ngIf="isPatientAdded && mode === 'edit'">
         Cancel
       </ion-button>
-    </ion-buttons> -->
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <!-- New patient form section-->
-  <ng-container *ngIf="mode === 'new'; else existingTemplate">
+  <ng-container *ngIf="mode === 'new'|| mode === 'edit'; else existingTemplate">
     <app-patient-form
-      (success)="afterRegistration($event)"
       (onSuccess)="afterRegistration($event)"
-      [data]="patient"
+      [data]="(data$ | async)?.data"
       [mode]="mode"
     ></app-patient-form>
   </ng-container>

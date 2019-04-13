@@ -5,6 +5,7 @@ import { ThemeService } from "src/app/shared/theme/theme.service";
 import { ModalController } from "@ionic/angular";
 import { UserService } from "src/app/shared/services/user.service";
 import { User } from "src/app/shared/models/user";
+import { toBrowserTime } from 'src/app/shared/helper';
 
 @Component({
   selector: "app-event-create-modal",
@@ -13,7 +14,7 @@ import { User } from "src/app/shared/models/user";
 })
 export class EventCreateModalComponent implements OnInit {
   createForm: FormGroup;
-  todaysDate: string = new Date().toISOString();
+  todaysDate: string = toBrowserTime();
   user: User;
   constructor(
     private fb: FormBuilder,
@@ -41,7 +42,7 @@ export class EventCreateModalComponent implements OnInit {
   initForm() {
     this.createForm = this.fb.group({
       title: ["", Validators.required],
-      eventDate: ["", Validators.required],
+      eventDate: [this.todaysDate, Validators.required],
       isLocationEvent: [false, Validators.required],
       latLng: ["", Validators.required],
       address: ["", Validators.required],
@@ -64,8 +65,9 @@ export class EventCreateModalComponent implements OnInit {
   prepareSaveInfo(): EventInfo {
     let user = this.userService.currentUserObj();
     const formModel = this.createForm.value;
+    console.log(formModel.eventDate);
     let event: EventInfo = {
-      EventDate: formModel.eventDate,
+      EventDate: new Date(formModel.eventDate).getTime(),
       Description: formModel.description,
       IsLocationEvent: formModel.isLocationEvent,
       Title: formModel.title,

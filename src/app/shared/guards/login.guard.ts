@@ -18,8 +18,8 @@ export class LoginGuard implements CanActivate, CanLoad {
     return this.checkUser(route.path);
   }
 
-  async checkUser(path) {
-   let isLoggedIn = await this.user.refreshUserDetails();
+  checkUser(path) {
+   let isLoggedIn = this.user.isAuthenticated();
 
     // navigate to login page
     if (isLoggedIn) {
@@ -27,7 +27,9 @@ export class LoginGuard implements CanActivate, CanLoad {
         this.router.navigate(["/home"]);
         return false;
       }
-    }
-    return true;
+      return true;
+    }else if(path.includes("login")|| path.includes("welcome")) return true;
+    this.router.navigate(["/welcome"]);
+    return false;
   }
 }

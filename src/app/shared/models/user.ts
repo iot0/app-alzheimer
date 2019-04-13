@@ -9,11 +9,13 @@ export class User {
   Address?:string;
   HomeLatLng?:string;
   CurrentLatLng?:string;
+  LatLngTimestamp?:number;
   PhoneNumber?:string;
   Patient?:User;
   Relation?:string;
   DOB?:Date;
   DeviceIp?:string;
+  ImagePath?:string;
 }
 export enum UserRole{
     CareTaker=1,

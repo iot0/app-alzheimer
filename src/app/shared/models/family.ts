@@ -8,4 +8,5 @@ export class Family {
   PhoneNumber?: string;
   Relation?: string;
   DOB?: Date;
+  ImagePath?:string;
 }

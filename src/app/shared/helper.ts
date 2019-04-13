@@ -13,3 +13,30 @@ export function convertToBoolProperty(val: any): boolean {
 
   return !!val;
 }
+
+export function toBrowserTime(date=null) {
+  let today = date?new Date(date):new Date();
+  var tzo = -today.getTimezoneOffset(),
+    dif = tzo >= 0 ? "+" : "-",
+    pad = function(num) {
+      var norm = Math.floor(Math.abs(num));
+      return (norm < 10 ? "0" : "") + norm;
+    };
+  return (
+    today.getFullYear() +
+    "-" +
+    pad(today.getMonth() + 1) +
+    "-" +
+    pad(today.getDate()) +
+    "T" +
+    pad(today.getHours()) +
+    ":" +
+    pad(today.getMinutes()) +
+    ":" +
+    pad(today.getSeconds()) +
+    dif +
+    pad(tzo / 60) +
+    ":" +
+    pad(tzo % 60)
+  );
+}

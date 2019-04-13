@@ -1,6 +1,6 @@
-import { NgModule } from "@angular/core";
+import { NgModule, APP_INITIALIZER } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { RouteReuseStrategy } from "@angular/router";
+import { RouteReuseStrategy, Router } from "@angular/router";
 
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
@@ -12,15 +12,20 @@ import { ServiceWorkerModule, SwUpdate, SwPush } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireStorageModule } from "@angular/fire/storage";
-import { AngularFireAuthModule } from "@angular/fire/auth";
-import { AngularFirestoreModule } from "@angular/fire/firestore";
+import { AngularFireAuthModule, AngularFireAuth } from "@angular/fire/auth";
+import { AngularFirestoreModule, AngularFirestore } from "@angular/fire/firestore";
 import { AngularFireMessagingModule } from "@angular/fire/messaging";
 import { AngularFireFunctionsModule } from "@angular/fire/functions";
-import { NgxMapModule } from 'ngx-map';
-import { SharedModule } from './shared/shared.module';
+import { NgxMapModule } from "ngx-map";
+import { SharedModule } from "./shared/shared.module";
 import { HttpClientModule } from "@angular/common/http";
-import { NativeRingtones } from '@ionic-native/native-ringtones/ngx';
-
+import { NativeAudio } from "@ionic-native/native-audio/ngx";
+import { BackgroundMode } from "@ionic-native/background-mode/ngx";
+import { Camera } from "@ionic-native/camera/ngx";
+import { Geolocation } from "@ionic-native/geolocation/ngx";
+import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
+import { UserService } from "./shared/services/user.service";
+import { FirestoreService } from "./shared/services/firestore.service";
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -44,8 +49,20 @@ import { NativeRingtones } from '@ionic-native/native-ringtones/ngx';
   providers: [
     StatusBar,
     SplashScreen,
-    NativeRingtones,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    NativeAudio,
+    BackgroundMode,
+    Camera,
+    Geolocation,
+    LocalNotifications,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {
+      provide: APP_INITIALIZER,
+      deps: [UserService],
+      useFactory: (config: UserService) => {
+        return () => config.refreshUserDetails();
+      },
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

@@ -16,7 +16,7 @@ export class ThemeService {
     public alertController: AlertController
   ) {}
 
-  async progress(show) {
+  async progress(show:boolean) {
     if (show) {
       this.loading = await this.loadingController.create();
       return await this.loading.present();
