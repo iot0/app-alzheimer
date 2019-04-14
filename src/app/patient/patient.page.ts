@@ -18,7 +18,7 @@ export class PatientPage implements OnInit {
   mode: FormMode = "existing";
   data$: BehaviorSubject<any> = new BehaviorSubject({ loading: true });
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService, private themeService: ThemeService) {
+  constructor(private route: ActivatedRoute, private router: Router, public userService: UserService, private themeService: ThemeService) {
     this.currentUser = this.userService.currentUserObj();
   }
 

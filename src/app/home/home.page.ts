@@ -22,7 +22,7 @@ import { BehaviorSubject } from "rxjs";
   styleUrls: ["home.page.scss"]
   // encapsulation:ViewEncapsulation.None
 })
-export class HomePage implements OnInit, AfterViewInit,OnInit {
+export class HomePage implements OnInit, AfterViewInit, OnInit {
   user: User;
   patient: User;
   drawerOptions: any;
@@ -39,6 +39,7 @@ export class HomePage implements OnInit, AfterViewInit,OnInit {
     private modalController: ModalController,
     private deviceService: DeviceService
   ) {
+    this.user = this.userService.currentUserObj();
     this.drawerOptions = {
       handleHeight: 50,
       thresholdFromBottom: 200,
@@ -48,9 +49,7 @@ export class HomePage implements OnInit, AfterViewInit,OnInit {
   }
 
   ngAfterViewInit(): void {
-    let user = this.userService.currentUserObj();
-    console.log(user);
-    if (user.Role === UserRole.Patient) {
+    if (this.user.Role === UserRole.Patient) {
       this.startWatchingEvents();
       // update local events
       // this.userService.getEventToNotify(user.Uid).subscribe(events => {
@@ -83,7 +82,7 @@ export class HomePage implements OnInit, AfterViewInit,OnInit {
           // data.coords.longitude
           let latLng = { lat: data.coords.latitude, lng: data.coords.longitude };
           this.userService
-            .updateDoc({ Id: user.Uid, CurrentLatLng: JSON.stringify(latLng), LatLngTimestamp: data.timestamp }, user.Uid)
+            .updateDoc({ Id: this.user.Uid, CurrentLatLng: JSON.stringify(latLng), LatLngTimestamp: data.timestamp }, this.user.Uid)
             .then(() => {
               console.log("GeoLocation updated Successfully");
               console.log(latLng);
@@ -97,9 +96,10 @@ export class HomePage implements OnInit, AfterViewInit,OnInit {
   }
 
   async ngOnInit() {
-    console.log(this.user);
-    this.user = this.userService.currentUserObj();
-    console.log(this.user);
+    // To update the user property with the latest changes
+    this.userService.currentUser$.subscribe(res => {
+      this.user = res;
+    });
 
     if (this.user.Role === UserRole.Patient) {
       this.startWatchingEvents();
@@ -112,7 +112,7 @@ export class HomePage implements OnInit, AfterViewInit,OnInit {
     this.sendToDevice$
       .pipe(
         throttleTime(2000),
-        filter(x => !!x && x.Id!==this.reminder.stoppedEventId)
+        filter(x => !!x && x.Id !== this.reminder.stoppedEventId)
       )
       .subscribe(res => {
         this.sendEventToDevice(res);

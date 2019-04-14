@@ -22,7 +22,7 @@ export class EventsPage implements OnInit, OnDestroy {
     public modalController: ModalController,
     private platform: Platform,
     private localNotifications: LocalNotifications,
-    private userService: UserService
+    public  userService: UserService
   ) {}
 
   ngOnInit() {
