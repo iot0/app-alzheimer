@@ -22,7 +22,7 @@ import { BehaviorSubject } from "rxjs";
   styleUrls: ["home.page.scss"]
   // encapsulation:ViewEncapsulation.None
 })
-export class HomePage implements OnInit, AfterViewInit {
+export class HomePage implements OnInit, AfterViewInit,OnInit {
   user: User;
   patient: User;
   drawerOptions: any;
@@ -39,8 +39,6 @@ export class HomePage implements OnInit, AfterViewInit {
     private modalController: ModalController,
     private deviceService: DeviceService
   ) {
-    this.user = this.userService.currentUserObj();
-
     this.drawerOptions = {
       handleHeight: 50,
       thresholdFromBottom: 200,
@@ -100,10 +98,10 @@ export class HomePage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     console.log(this.user);
-    let user = this.userService.currentUserObj();
-    console.log(user);
+    this.user = this.userService.currentUserObj();
+    console.log(this.user);
 
-    if (user.Role === UserRole.Patient) {
+    if (this.user.Role === UserRole.Patient) {
       this.startWatchingEvents();
     }
     this.localNotifications.getAll().then(res => {
@@ -171,7 +169,7 @@ export class HomePage implements OnInit, AfterViewInit {
     }
   }
   async onTrackingPatient() {
-    if (this.user.Patient.Uid) {
+    if (this.user.Patient && this.user.Patient.Uid) {
       let patient = await this.userService.getUserDetailsAsAsync(this.user.Patient.Uid);
       if (patient.CurrentLatLng) {
         this.mapService.openModal({ enableSelection: false, marker: JSON.parse(patient.CurrentLatLng) });

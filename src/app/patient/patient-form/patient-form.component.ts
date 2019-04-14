@@ -58,7 +58,7 @@ export class PatientFormComponent implements OnInit, OnChanges {
       phoneNumber: ["", Validators.required],
       latLng: ["", Validators.required],
       address: ["", Validators.required],
-      imagePath: ["", Validators.required]
+      imagePath: [""]
     });
   }
 
