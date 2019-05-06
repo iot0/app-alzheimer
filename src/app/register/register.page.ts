@@ -5,6 +5,7 @@ import { ThemeService } from "../shared/theme/theme.service";
 import { User, UserRole } from "../shared/models/user";
 import { UserService } from "../shared/services/user.service";
 import { Router } from "@angular/router";
+import { PushNotificationsService } from '../shared/services/push-notifications.service';
 
 @Component({
   selector: "app-register",
@@ -21,6 +22,7 @@ export class RegisterPage implements OnInit {
   ) {
     this.registerForm = this.fb.group({
       email: ["", Validators.required],
+      phno: ["", Validators.required],
       password: ["", Validators.required],
       fullName: ["", Validators.required]
     });
@@ -36,10 +38,11 @@ export class RegisterPage implements OnInit {
 
       try {
         // 3. get the values to variable from the form variable
-        const { email, password, fullName } = this.registerForm.value;
+        const { email,phno, password, fullName } = this.registerForm.value;
 
         let user: User = {
           EmailId: email,
+          PhoneNumber: phno,
           Password: password,
           FullName: fullName,
           Role: UserRole.CareTaker

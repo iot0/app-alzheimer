@@ -99,6 +99,7 @@ export class HomePage implements OnInit, AfterViewInit, OnInit {
     // To update the user property with the latest changes
     this.userService.currentUser$.subscribe(res => {
       this.user = res;
+      console.log(this.user);
     });
 
     if (this.user.Role === UserRole.Patient) {

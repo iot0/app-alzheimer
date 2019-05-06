@@ -36,7 +36,9 @@ const routes: Routes = [
   { path: "patient", redirectTo: "patient/", canActivate: [LoginGuard], canLoad: [LoginGuard] },
   { path: "families/:pid", loadChildren: "./families/families.module#FamiliesPageModule", canActivate: [LoginGuard], canLoad: [LoginGuard] },
   { path: "family/:pid/:fid", loadChildren: "./family/family.module#FamilyPageModule", canActivate: [LoginGuard], canLoad: [LoginGuard] },
-  { path: "family/:pid", loadChildren: "./family/family.module#FamilyPageModule", canActivate: [LoginGuard], canLoad: [LoginGuard] }
+  { path: "family/:pid", loadChildren: "./family/family.module#FamilyPageModule", canActivate: [LoginGuard], canLoad: [LoginGuard] },
+  { path: 'tips', loadChildren: './tips/tips.module#TipsPageModule' },
+  { path: 'gallery', loadChildren: './gallery/gallery.module#GalleryPageModule' }
 ];
 
 @NgModule({

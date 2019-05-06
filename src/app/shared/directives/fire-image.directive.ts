@@ -1,7 +1,6 @@
-import { Directive, Output, EventEmitter, HostListener } from "@angular/core";
+import { Directive, Output, EventEmitter, HostListener, Input } from "@angular/core";
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { ActionSheetController } from "@ionic/angular";
-import { AngularFireStorage } from "@angular/fire/storage";
 
 @Directive({
   selector: "[appFireImage]"
@@ -11,9 +10,9 @@ export class FireImageDirective {
   onSuccess: EventEmitter<any> = new EventEmitter();
   @Output("onError")
   onError: EventEmitter<any> = new EventEmitter();
-  storageDir: string = "patients";
 
-  constructor(private camera: Camera, public actionSheetCtrl: ActionSheetController, private storage: AngularFireStorage) {}
+  constructor(private camera: Camera, 
+    public actionSheetCtrl: ActionSheetController) {}
 
   @HostListener("click")
   async onAddImage() {
@@ -65,25 +64,12 @@ export class FireImageDirective {
     this.camera.getPicture(options).then(
       imageData => {
         let base64 = "data:image/jpeg;base64," + imageData;
-        this.onSuccess.emit(this.upload(base64));
+        this.onSuccess.emit(base64);
       },
       err => {
         this.onError.emit(err);
         console.log(err);
       }
     );
-  }
-  upload(data, name: string = null) {
-    try {
-      let uniqkey = `${this.storageDir}/${name ? `${name}_` : ""}${Math.floor(Math.random() * 1000000)}`;
-      let fileRef = this.storage.ref(uniqkey);
-      const task = fileRef.putString(data, "data_url");
-
-      // this.onSuccess.emit(task);//added for testing only
-      return task;
-    } catch (e) {
-      console.log(e);
-      this.onError.emit(e);
-    }
   }
 }

@@ -1,15 +1,15 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>
-      <ng-container *ngIf="(userService.isPatient$ | async)">Patient </ng-container>
-      <ng-container *ngIf="(userService.isCareTaker$ | async)">Care Taker </ng-container>
+      <ng-container *ngIf="userService.isPatient$ | async">Patient </ng-container>
+      <ng-container *ngIf="userService.isCareTaker$ | async">Care Taker </ng-container>
       Dashboard
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="bg-secondary h-100 content-center">
+  <div class="bg-secondary h-100 home-content">
     <div class="col-grid">
       <!--trips-->
       <ion-card class="col-item" (click)="openEvents()">
@@ -19,14 +19,20 @@
           Events
         </div>
       </ion-card>
-      <ion-card class="col-item" (click)="viewPatient()" *ngIf="(userService.isCareTaker$ | async)">
+      <ion-card class="col-item" (click)="viewPatient()" *ngIf="userService.isCareTaker$ | async">
         <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
         <img src="/assets/patient.png" alt="" />
         <div class="col-label">
           Patient
         </div>
       </ion-card>
-      <ion-card class="col-item" (click)="viewPatient()" *ngIf="(userService.isPatient$ | async)">
+      <ion-card class="col-item" routerLink="/tips" *ngIf="userService.isCareTaker$ | async">
+        <ion-icon name="help" color='secondary'></ion-icon>
+        <div class="col-label">
+          Tips
+        </div>
+      </ion-card>
+      <ion-card class="col-item" (click)="viewPatient()" *ngIf="userService.isPatient$ | async">
         <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
         <img src="/assets/patient.png" alt="" />
         <div class="col-label">
@@ -35,7 +41,7 @@
       </ion-card>
       <ion-card
         class="col-item"
-        *ngIf="(userService.isPatient$ | async)"
+        *ngIf="userService.isPatient$ | async"
         (click)="onTracking(user.HomeLatLng)"
         appLocation
         disableOnClickTrigger="true"
@@ -48,7 +54,7 @@
       </ion-card>
       <ion-card
         class="col-item"
-        *ngIf="(userService.isCareTaker$ | async)"
+        *ngIf="userService.isCareTaker$ | async"
         (click)="onTrackingPatient()"
         appLocation
         disableOnClickTrigger="true"
@@ -58,15 +64,29 @@
           Track
         </div>
       </ion-card>
-      <ion-card class="col-item" *ngIf="(userService.isPatient$ | async)"  [routerLink]="['/families/',user?.Uid]">
+      <ion-card class="col-item" *ngIf="userService.isPatient$ | async">
+        <a href="tel:{{ user.PhoneNumber }}" class="home-icon-link">
+          <ion-icon name="call" color="secondary"></ion-icon>
+          <div class="col-label">
+            Care Taker
+          </div>
+        </a>
+      </ion-card>
+      <ion-card class="col-item" *ngIf="userService.isPatient$ | async" [routerLink]="['/families/', user?.Uid]">
         <!-- <ion-icon name="infinite" color='secondary'></ion-icon> -->
         <img src="/assets/family.png" alt="" />
         <div class="col-label">
           Family
         </div>
       </ion-card>
+      <ion-card class="col-item" routerLink="/gallery">
+        <ion-icon name="images" color='secondary'></ion-icon>
+        <div class="col-label">
+          Gallery
+        </div>
+      </ion-card>
       <!---->
-      <ion-card class="col-item" (click)="onLogOut()">
+      <ion-card class="col-item align-self-end" (click)="onLogOut()">
         <ion-icon name="log-out" color="danger"></ion-icon>
         <div class="col-label">
           Log Out
@@ -75,6 +95,6 @@
     </div>
   </div>
 </ion-content>
-<app-drawer [options]="drawerOptions" *ngIf="(userService.isPatient$ | async)" #drawer>
+<app-drawer [options]="drawerOptions" *ngIf="userService.isPatient$ | async" #drawer>
   <app-device-connect [drawer]="drawer"></app-device-connect>
 </app-drawer>

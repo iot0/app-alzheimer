@@ -115,15 +115,16 @@
   grid-template-columns: 1fr 2fr;
 }
 
+.align-self-end{
+  align-self: flex-end;
+}
 //dashboard
 
 .col-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
-  grid-column-gap: 5px;
-  grid-row-gap: 10px;
-
+  justify-content: center;
   .col-item {
     height: 200px;
     display: flex;
@@ -133,7 +134,7 @@
     text-align: center;
     padding: 20px;
     background-color: white;
-    align-self: center;
+    width: 150px;
     ion-icon {
       flex: 1;
       font-size: 3em;

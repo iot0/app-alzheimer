@@ -6,6 +6,7 @@ import { UserService } from "src/app/shared/services/user.service";
 import { Family } from "src/app/shared/models/family";
 import { finalize } from "rxjs/operators";
 import { AngularFireUploadTask, AngularFireStorage } from "@angular/fire/storage";
+import { FireStorageService } from "src/app/shared/services/fire-storage.service";
 
 @Component({
   selector: "app-family-form",
@@ -27,7 +28,7 @@ export class FamilyFormComponent implements OnInit {
     private themeService: ThemeService,
     public modalController: ModalController,
     private userService: UserService,
-    private storage: AngularFireStorage
+    private storage: FireStorageService
   ) {
     this.initForm();
   }
@@ -56,39 +57,40 @@ export class FamilyFormComponent implements OnInit {
       this.createForm.get("latLng").setValue(JSON.stringify(location));
     }
   }
-  async onImageSelect(e: AngularFireUploadTask) {
+  async onImageSelect(img) {
     await this.themeService.progress(true);
-    e.then(
-      res => {
-        this.themeService.progress(false);
-        this.themeService.toast("Image uploaded successfully .");
-        if (res) {
-          this.createForm.get("imagePath").setValue(res.ref.fullPath);
-          console.log(res);
-          e.snapshotChanges()
-            .pipe(
-              finalize(() => {
-                this.storage
-                  .ref(res.ref.fullPath)
-                  .getDownloadURL()
-                  .subscribe(res => {
+    let task = this.storage.uploadGalleryImage(img);
+    task
+      .then(
+        res => {
+          this.themeService.progress(false);
+          this.themeService.toast("Image uploaded successfully .");
+          if (res) {
+            this.createForm.get("imagePath").setValue(res.ref.fullPath);
+            console.log(res);
+            task
+              .snapshotChanges()
+              .pipe(
+                finalize(() => {
+                  this.storage.getDownloadURL(res.ref.fullPath).subscribe(res => {
                     this.createForm.get("imagePath").setValue(res);
                   });
-              })
-            )
-            .subscribe();
+                })
+              )
+              .subscribe();
+          }
+        },
+        err => {
+          console.log(err);
+          this.themeService.toast("Sorry something went wrong .");
+          this.themeService.progress(false);
         }
-      },
-      err => {
+      )
+      .catch(err => {
         console.log(err);
         this.themeService.toast("Sorry something went wrong .");
         this.themeService.progress(false);
-      }
-    ).catch(err => {
-      console.log(err);
-      this.themeService.toast("Sorry something went wrong .");
-      this.themeService.progress(false);
-    });
+      });
   }
   onImageError(e) {
     console.log(e);

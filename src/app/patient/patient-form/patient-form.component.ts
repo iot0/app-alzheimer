@@ -6,6 +6,7 @@ import { User, UserRole } from "../../shared/models/user";
 import { FormMode } from "src/app/shared/models/form";
 import { AngularFireUploadTask, AngularFireStorage } from "@angular/fire/storage";
 import { finalize } from "rxjs/operators";
+import { FireStorageService } from "src/app/shared/services/fire-storage.service";
 
 @Component({
   selector: "app-patient-form",
@@ -27,7 +28,7 @@ export class PatientFormComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private themeService: ThemeService,
     private userService: UserService,
-    private storage: AngularFireStorage
+    private storage: FireStorageService
   ) {
     this.initForm();
   }
@@ -69,7 +70,7 @@ export class PatientFormComponent implements OnInit, OnChanges {
       latLng: data.HomeLatLng,
       address: data.Address,
       emailId: data.EmailId,
-      imagePath:data.ImagePath,
+      imagePath: data.ImagePath,
       password: "password"
     });
 
@@ -82,39 +83,37 @@ export class PatientFormComponent implements OnInit, OnChanges {
     }
   }
 
-  async onImageSelect(e: AngularFireUploadTask) {
+  async onImageSelect(img) {
     await this.themeService.progress(true);
-    e.then(
-      res => {
-        this.themeService.progress(false);
-        this.themeService.toast("Image uploaded successfully .");
-        if (res) {
-          this.createForm.get("imagePath").setValue(res.ref.fullPath);
-          console.log(res);
-          e.snapshotChanges()
-            .pipe(
-              finalize(() => {
-                this.storage
-                  .ref(res.ref.fullPath)
-                  .getDownloadURL()
-                  .subscribe(res => {
+    let task=this.storage.uploadPatientImage(img);
+
+      task.then(
+        res => {
+          this.themeService.progress(false);
+          this.themeService.toast("Image uploaded successfully .");
+          if (res) {
+            task.snapshotChanges()
+              .pipe(
+                finalize(() => {
+                  this.storage.getDownloadURL(res.ref.fullPath).subscribe(res => {
                     this.createForm.get("imagePath").setValue(res);
                   });
-              })
-            )
-            .subscribe();
+                })
+              )
+              .subscribe();
+          }
+        },
+        err => {
+          console.log(err);
+          this.themeService.toast("Sorry something went wrong .");
+          this.themeService.progress(false);
         }
-      },
-      err => {
+      )
+      .catch(err => {
         console.log(err);
         this.themeService.toast("Sorry something went wrong .");
         this.themeService.progress(false);
-      }
-    ).catch(err => {
-      console.log(err);
-      this.themeService.toast("Sorry something went wrong .");
-      this.themeService.progress(false);
-    });
+      });
   }
   onImageError(e) {
     console.log(e);
@@ -131,7 +130,7 @@ export class PatientFormComponent implements OnInit, OnChanges {
         Address: formModel.address,
         HomeLatLng: formModel.latLng as string,
         PhoneNumber: formModel.phoneNumber as string,
-        ImagePath:formModel.imagePath as string
+        ImagePath: formModel.imagePath as string
       };
     } else {
       return {
@@ -139,7 +138,7 @@ export class PatientFormComponent implements OnInit, OnChanges {
         Address: formModel.address,
         HomeLatLng: formModel.latLng as string,
         PhoneNumber: formModel.phoneNumber as string,
-        ImagePath:formModel.imagePath as string
+        ImagePath: formModel.imagePath as string
       };
     }
   }
@@ -161,7 +160,6 @@ export class PatientFormComponent implements OnInit, OnChanges {
 
           this.themeService.alert("Success", "Patient registered successfully .");
           this.onSuccess.emit(patient.Uid);
-          
         } else {
           let updateRes = await this.userService.updateDoc(data, this.data.Uid);
           this.themeService.alert("Success", "Patient updated successfully .");
