@@ -9,4 +9,5 @@ export class EventInfo {
    Address?:string;
    Description:string;
    CreatedBy?:User;
+   IsAcknowledged?:boolean;
 }

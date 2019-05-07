@@ -17,6 +17,7 @@ export class UserService implements OnInit{
   collectionName: string = "Users";
   eventSubCollectionName: string = "Events";
   familySubCollectionName: string = "Families";
+  galleryCollectionName: string = "Gallery";
   localKey: string = "user";
   userSubject: BehaviorSubject<User> = new BehaviorSubject(null);
 
@@ -131,6 +132,24 @@ export class UserService implements OnInit{
     });
   }
 
+  addToGallery(data) {
+    const user=this.currentUserObj();
+    return this.firestoreService.add(`${this.collectionName}/${user.Patient.Uid}/${this.galleryCollectionName}`, data);
+  }
+
+  getFromGallery() {
+    const user=this.currentUserObj();
+    let uid=null;
+    if(user.Role===UserRole.CareTaker)uid=user.Patient.Uid;
+    else uid=user.Uid;
+    return this.firestoreService.colWithIds$(`${this.collectionName}/${uid}/${this.galleryCollectionName}`, q => {
+      return q.limit(30);
+    });
+  }
+  acknowledgeEvent(event:EventInfo) {
+    const user=this.currentUserObj();
+    return this.firestoreService.update(`${this.collectionName}/${user.Uid}/${this.eventSubCollectionName}/${event.Id}`, {IsAcknowledged:true});
+  }
   getEventToNotify(userId: string) {
     console.log(new Date().getUTCMilliseconds());
     console.log(new Date().getTime());

@@ -7,8 +7,6 @@ import { BackgroundMode } from "@ionic-native/background-mode/ngx";
 import { UserService } from "./shared/services/user.service";
 import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 import { ThemeService } from './shared/theme/theme.service';
-import { ReminderService } from './shared/services/reminder.service';
-import { EventDisplayComponent } from './shared/components/event-display/event-display.component';
 
 @Component({
   selector: "app-root",

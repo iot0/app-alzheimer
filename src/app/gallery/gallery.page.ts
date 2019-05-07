@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import PhotoSwipe from "photoswipe";
-import PhotoSwipeUI_Default from "photoswipe/dist/photoswipe-ui-default";
 import { FireStorageService } from "../shared/services/fire-storage.service";
 import { ThemeService } from "../shared/theme/theme.service";
-import { finalize } from "rxjs/operators";
+import { finalize, catchError, takeWhile } from "rxjs/operators";
+import { ModalController } from "@ionic/angular";
+import { GalleryFormComponent } from "./gallery-form/gallery-form.component";
+import { UserService } from "../shared/services/user.service";
+import { BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "app-gallery",
@@ -13,65 +15,40 @@ import { finalize } from "rxjs/operators";
 export class GalleryPage implements OnInit {
   @ViewChild("photoSwipe") photoSwipe: ElementRef;
   createForm: any;
+  data$: BehaviorSubject<any> = new BehaviorSubject({ loading: true });
+  isAlive: boolean = true;
+  constructor(public modalController: ModalController, public userService: UserService, private themeService: ThemeService) {}
 
-  constructor(private storage: FireStorageService, private themeService: ThemeService) {}
+  ngOnInit() {
+    this.loadAllGalleryImages();
+  }
 
-  ngOnInit() {}
-  async onImageSelect(img) {
-    await this.themeService.progress(true);
-    let task = this.storage.uploadGalleryImage(img);
-    task
-      .then(
-        res => {
-          this.themeService.progress(false);
-          this.themeService.toast("Image uploaded successfully .");
-          if (res) {
-            // refresh images
-          }
-        },
-        err => {
+  async onAddToGallery() {
+    let user = this.userService.currentUserObj();
+    if (!user.Patient || !user.Patient.Uid) this.themeService.alert("Warning", "Please add patient first ");
+    const modal = await this.modalController.create({
+      component: GalleryFormComponent
+    });
+    return await modal.present();
+  }
+
+  loadAllGalleryImages() {
+    this.data$.next({ loading: true });
+    this.userService
+      .getFromGallery()
+      .pipe(
+        catchError(err => {
           console.log(err);
-          this.themeService.toast("Sorry something went wrong .");
-          this.themeService.progress(false);
-        }
+          this.data$.next({ error: true });
+          return err;
+        }),
+        takeWhile(() => this.isAlive)
       )
-      .catch(err => {
-        console.log(err);
-        this.themeService.toast("Sorry something went wrong .");
-        this.themeService.progress(false);
+      .subscribe((res: any) => {
+        if (res && res.length > 0) {
+          this.data$.next({ data: res });
+        } else this.data$.next({ empty: true });
+        console.log(res);
       });
-  }
-  onImageError(e) {
-    console.log(e);
-    this.themeService.toast("Sorry something went wrong .");
-  }
-  openGallery() {
-    // Build gallery images array
-    // build items array
-    let items = [
-      {
-        src: "https://farm2.staticflickr.com/1043/5186867718_06b2e9e551_b.jpg",
-        w: 964,
-        h: 1024
-      },
-      {
-        src: "https://farm7.staticflickr.com/6175/6176698785_7dee72237e_b.jpg",
-        w: 1024,
-        h: 683
-      }
-    ];
-
-    // define options (if needed)
-    let options = {
-      // history & focus options are disabled on CodePen
-      history: false,
-      focus: false,
-
-      showAnimationDuration: 0,
-      hideAnimationDuration: 0
-    };
-
-    const gallery = new PhotoSwipe(this.photoSwipe.nativeElement, PhotoSwipeUI_Default, items, options);
-    gallery.init();
   }
 }

@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, ViewEncapsulation, OnInit } from "@angular/core";
 import { PushNotificationsService } from "../shared/services/push-notifications.service";
-import { AngularFireAuth } from "@angular/fire/auth";
 import { UserService } from "../shared/services/user.service";
 import { ThemeService } from "../shared/theme/theme.service";
 import { User, UserRole } from "../shared/models/user";
@@ -10,9 +9,7 @@ import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { throttleTime, map, filter } from "rxjs/operators";
 import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 import { EventInfo } from "../shared/models/event";
-import { ReminderService } from "../shared/services/reminder.service";
 import { ModalController } from "@ionic/angular";
-import { EventDisplayComponent } from "../shared/components/event-display/event-display.component";
 import { DeviceService } from "../shared/services/device.service";
 import { BehaviorSubject } from "rxjs";
 
@@ -28,16 +25,12 @@ export class HomePage implements OnInit, AfterViewInit, OnInit {
   drawerOptions: any;
   sendToDevice$: BehaviorSubject<EventInfo> = new BehaviorSubject(null);
   constructor(
-    private push: PushNotificationsService,
     public userService: UserService,
     private themeService: ThemeService,
     private router: Router,
     private mapService: LocationService,
     private geolocation: Geolocation,
     private localNotifications: LocalNotifications,
-    private reminder: ReminderService,
-    private modalController: ModalController,
-    private deviceService: DeviceService
   ) {
     this.user = this.userService.currentUserObj();
     this.drawerOptions = {
@@ -50,7 +43,6 @@ export class HomePage implements OnInit, AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     if (this.user.Role === UserRole.Patient) {
-      this.startWatchingEvents();
       // update local events
       // this.userService.getEventToNotify(user.Uid).subscribe(events => {
       //   console.log("Local notification creation");
@@ -101,23 +93,10 @@ export class HomePage implements OnInit, AfterViewInit, OnInit {
       this.user = res;
       console.log(this.user);
     });
-
-    if (this.user.Role === UserRole.Patient) {
-      this.startWatchingEvents();
-    }
     this.localNotifications.getAll().then(res => {
       console.log("GET ALL LOCAL NOTIFICATIONS");
       console.log(res);
     });
-
-    this.sendToDevice$
-      .pipe(
-        throttleTime(2000),
-        filter(x => !!x && x.Id !== this.reminder.stoppedEventId)
-      )
-      .subscribe(res => {
-        this.sendEventToDevice(res);
-      });
   }
   async onLogOut() {
     await this.themeService.progress(true);
@@ -130,36 +109,6 @@ export class HomePage implements OnInit, AfterViewInit, OnInit {
     } finally {
       await this.themeService.progress(false);
     }
-  }
-  startWatchingEvents() {
-    this.reminder.watchEvents(event => {
-      //this.display(event);
-      if (event) this.sendToDevice$.next(event);
-      else {
-        this.startWatchingEvents();
-      }
-    });
-  }
-  private sendEventToDevice(event) {
-    this.deviceService.sendEvent(event).subscribe(res => {
-      console.count("device event send");
-      console.log(res);
-      if (res["buttonStatus"]) {
-        console.log("stopped");
-        this.reminder.stop();
-      }
-    });
-  }
-  private async display(event) {
-    const modal = await this.modalController.create({
-      component: EventDisplayComponent,
-      componentProps: { event: event }
-    });
-    modal.onWillDismiss().then(res => {
-      this.reminder.stop();
-      this.startWatchingEvents();
-    });
-    return await modal.present();
   }
   onTracking(latLng) {
     console.log(latLng);

@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-button fill="solid" (click)="onClose()" color="light" fill="outline">
+        Back
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Add Gallery Images</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="solid" (click)="onSubmit()" color="light" fill="outline">
+        Confirm
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <form [formGroup]="createForm" novalidate autocomplete="off">
+      <div class="image-container">
+        <!-- <img  class="place-image" src="/assets/empty.png" alt=""> -->
+        <div *ngIf="!createForm.get('imagePath').value" class="image-placeholder"></div>
+        <img [src]="createForm.get('imagePath').value" alt="" />
+        <!-- fab placed to the bottom end -->
+        <input type="hidden" formControlName="imagePath" />
+        <ion-fab vertical="bottom" horizontal="end" edge>
+          <ion-fab-button appFireImage (onSuccess)="onImageSelect($event)" (onError)="onImageError($event)">
+            <ion-icon name="camera"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </div>
+      <ion-item-divider>
+        <ion-label>
+          <ion-text color="primary">
+            <h2>Caption</h2>
+          </ion-text>
+        </ion-label>
+      </ion-item-divider>
+      <ion-item>
+        <ion-input formControlName="caption" type="text" placeholder="Add a short caption "></ion-input>
+      </ion-item>
+    </form>
+  </ion-list>
+</ion-content>
+

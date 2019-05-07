@@ -96,5 +96,5 @@
   </div>
 </ion-content>
 <app-drawer [options]="drawerOptions" *ngIf="userService.isPatient$ | async" #drawer>
-  <app-device-connect [drawer]="drawer"></app-device-connect>
+  <app-event-drawer [drawer]="drawer"></app-event-drawer>  
 </app-drawer>

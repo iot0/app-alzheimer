@@ -5,7 +5,7 @@ import { ThemeService } from "src/app/shared/theme/theme.service";
 import { ModalController } from "@ionic/angular";
 import { UserService } from "src/app/shared/services/user.service";
 import { User } from "src/app/shared/models/user";
-import { toBrowserTime } from 'src/app/shared/helper';
+import { toBrowserTime } from "src/app/shared/helper";
 
 @Component({
   selector: "app-event-create-modal",
@@ -28,8 +28,8 @@ export class EventCreateModalComponent implements OnInit {
   ngOnInit() {
     this.user = this.userService.currentUserObj();
 
-    this.createForm.get("isLocationEvent").statusChanges.subscribe(status => {
-      if (status === "VALID") {
+    this.createForm.get("isLocationEvent").valueChanges.subscribe(value => {
+      if (value) {
         this.createForm.get("latLng").enable();
         this.createForm.get("address").enable();
       } else {
